@@ -1,14 +1,22 @@
 from sqlmodel import SQLModel, create_engine, Session
 from sqlalchemy.exc import OperationalError
 from typing import Generator
+from dotenv import load_dotenv
+import os
 
 
-# Define SQLite database URL
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+# Load environment variables from the .env file
+load_dotenv()
 
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
+# Get the database connection URL from environment variable
+mysql_url = os.getenv("DATABASE_URL")
+
+# If the DATABASE_URL environment variable is not set, raise an error
+if not mysql_url:
+    raise ValueError("DATABASE_URL environment variable is not set")
+
+# Create SQLAlchemy engine with the database connection URL
+engine = create_engine(mysql_url)
 
 
 # Create the tables

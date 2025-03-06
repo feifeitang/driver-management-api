@@ -5,7 +5,7 @@ This is a FastAPI application following Domain-Driven Design (DDD) principles to
 ## Features
 - Create, Read, Update, and Delete drivers.
 - Domain-driven design architecture to separate concerns.
-- Uses SQLite as the database.
+- Uses MySQL as the database.
 - API documentation available via Swagger UI at `/docs`.
 
 ## Architecture
@@ -20,7 +20,7 @@ The project is organized into layers, each with its own responsibility:
 - Python 3.7+
 - FastAPI
 - SQLModel (SQLAlchemy)
-- SQLite (used for local development)
+- MySQL (used for local development)
 
 ## Installation
 
@@ -44,12 +44,23 @@ source .venv/bin/activate  # On Windows, use .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+### 4. Set up your MySQL database:
+
+Make sure you have a MySQL server running. You'll need to set the environment variable for the database URL:
+- Create a `.env` file in the root directory.
+- Add the following:
+
+```
+DATABASE_URL=mysql+mysqlconnector://<username>:<password>@localhost/<database_name>
+```
+Replace `<username>`, `<password>`, and `<database_name>` with your actual MySQL credentials.
+
 ## Running the Application
 
 You can run the FastAPI app using `uvicorn`:
 
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
 
 This will start the development server on `http://127.0.0.1:8000`.
