@@ -1,55 +1,8 @@
+from fastapi import FastAPI, HTTPException, Depends, Query
 from typing import Annotated
-
-from fastapi import Depends, FastAPI, HTTPException, Query
-from sqlmodel import Field, Session, SQLModel, create_engine, select
-
-
-# the base class
-class DriverBase(SQLModel):
-    name: str = Field(index=True)
-    age: int | None = Field(default=None, index=True)
-
-
-# the table model
-class Driver(DriverBase, table=True):
-    id: int | None = Field(default=None, primary_key=True)
-    secret_name: str
-
-
-# the public data model
-class DriverPublic(DriverBase):
-    id: int
-
-
-# the data model to create a driver
-class DriverCreate(DriverBase):
-    secret_name: str
-
-
-# the data model to update a driver
-class DriverUpdate(DriverBase):
-    name: str | None = None
-    age: int | None = None
-    secret_name: str | None = None
-
-
-# Create an engine
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
-
-connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
-
-
-# Create the tables
-def create_db_and_tables():
-    SQLModel.metadata.create_all(engine)
-
-
-# Create a session dependency
-def get_session():
-    with Session(engine) as session:
-        yield session
+from app.db import create_db_and_tables, get_session
+from app.models import Driver, DriverCreate, DriverUpdate, DriverPublic
+from sqlmodel import Session, select
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
