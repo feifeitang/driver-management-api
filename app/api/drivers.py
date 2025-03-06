@@ -1,65 +1,75 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from typing import Annotated
-from app.db import get_session
-from app.db.models import Driver, DriverCreate, DriverUpdate, DriverPublic
+from typing import Annotated, List
+from app.infrastructure import get_session
+from app.infrastructure.models import Driver, DriverCreate, DriverUpdate, DriverPublic
 from sqlmodel import Session, select
+from app.infrastructure.driver_repository import DriverRepository
+from app.domain.driver_service import DriverService
 
 
 router = APIRouter(prefix="/drivers", tags=["drivers"])
 
-SessionDep = Annotated[Session, Depends(get_session)]
+
+def get_driver_service(session: Session = Depends(get_session)):
+    """
+    Dependency injection to create a DriverService with a session.
+    """
+    repository = DriverRepository(session)
+    return DriverService(repository)
 
 
-# Create a driver
 @router.post("/", response_model=DriverPublic)
-def create_driver(driver: DriverCreate, session: SessionDep):
-    db_driver = Driver.model_validate(driver)
-    session.add(db_driver)
-    session.commit()
-    session.refresh(db_driver)
-    return db_driver
-
-
-# Read drivers
-@router.get("/", response_model=list[DriverPublic])
-def read_drivers(
-    session: SessionDep,
-    offset: int = 0,
-    limit: Annotated[int, Query(le=100)] = 100,
+def create_driver(
+    driver: DriverCreate, service: DriverService = Depends(get_driver_service)
 ):
-    drivers = session.exec(select(Driver).offset(offset).limit(limit)).all()
-    return drivers
+    """
+    Create a new driver.
+    """
+    return service.create_driver(driver.name, driver.age, driver.secret_name)
 
 
-# Read one driver
-@router.get("/{driver_id}", response_model=DriverPublic)
-def read_driver(driver_id: int, session: SessionDep):
-    driver = session.get(Driver, driver_id)
+@router.get("/", response_model=List[DriverPublic])
+def get_drivers(service: DriverService = Depends(get_driver_service)):
+    """
+    API endpoint to retrieve all drivers.
+    """
+    return service.get_all_drivers()
+
+
+@router.get("/{driver_id}", response_model=Driver)
+def get_driver(driver_id: int, service: DriverService = Depends(get_driver_service)):
+    """
+    Retrieve a driver by ID.
+    """
+    driver = service.get_driver(driver_id)
     if not driver:
         raise HTTPException(status_code=404, detail="Driver not found")
     return driver
 
 
-# Update a driver
-@router.patch("/{driver_id}", response_model=DriverPublic)
-def update_driver(driver_id: int, driver: DriverUpdate, session: SessionDep):
-    driver_db = session.get(Driver, driver_id)
-    if not driver_db:
+@router.put("/{driver_id}", response_model=DriverUpdate)
+def update_driver(
+    driver_id: int,
+    driver: DriverUpdate,
+    service: DriverService = Depends(get_driver_service),
+):
+    """
+    Update an existing driver's details.
+    """
+    updated_driver = service.update_driver(
+        driver_id, driver.name, driver.age, driver.secret_name
+    )
+    if not updated_driver:
         raise HTTPException(status_code=404, detail="Driver not found")
-    driver_data = driver.model_dump(exclude_unset=True)
-    driver_db.sqlmodel_update(driver_data)
-    session.add(driver_db)
-    session.commit()
-    session.refresh(driver_db)
-    return driver_db
+    return updated_driver
 
 
-# Delete a driver
-@router.delete("/{driver_id}")
-def delete_driver(driver_id: int, session: SessionDep):
-    driver = session.get(Driver, driver_id)
-    if not driver:
+@router.delete("/{driver_id}", response_model=dict)
+def delete_driver(driver_id: int, service: DriverService = Depends(get_driver_service)):
+    """
+    Delete a driver by ID.
+    """
+    success = service.delete_driver(driver_id)
+    if not success:
         raise HTTPException(status_code=404, detail="Driver not found")
-    session.delete(driver)
-    session.commit()
-    return {"ok": True}
+    return {"message": "Driver deleted successfully"}

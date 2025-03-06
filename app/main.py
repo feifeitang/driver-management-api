@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.db import create_db_and_tables
+from app.infrastructure import create_db_and_tables
 from app.api import drivers
 
 

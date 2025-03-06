@@ -1,11 +1,20 @@
 # Driver Management API
 
-This is a simple FastAPI application that provides CRUD operations for managing drivers using SQLModel. It allows you to create, read, update, and delete driver records, as well as expose a RESTful API.
+This is a FastAPI application following Domain-Driven Design (DDD) principles to manage drivers. The application provides CRUD operations for managing driver records using SQLModel. It allows you to create, read, update, and delete driver records via a RESTful API.
 
 ## Features
 - Create, Read, Update, and Delete drivers.
+- Domain-driven design architecture to separate concerns.
 - Uses SQLite as the database.
 - API documentation available via Swagger UI at `/docs`.
+
+## Architecture
+The project is organized into layers, each with its own responsibility:
+
+- **Domain Layer**: Contains the core business logic, including validation rules (e.g., age validation).
+- **Service Layer**: Handles business operations and communicates with repositories.
+- **Repository Layer**: Manages data persistence and retrieval from the database.
+- **API Layer**: Exposes a RESTful interface for interacting with the application.
 
 ## Requirements
 - Python 3.7+
