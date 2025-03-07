@@ -23,11 +23,9 @@ class Driver(SQLModel, table=True):
         secret_name: Optional[str] = None,
     ):
         """
-        Update driver details.
+        Validate driver details.
         """
-        if name:
-            self.name = name
-        if age:
+        if age is not None:
             if age < 18:
                 raise HTTPException(
                     status_code=400, detail="Age must be at least 18"

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.infrastructure import create_db_and_tables
-from app.api import drivers
+from app.api import drivers, health
 
 
 app = FastAPI()
@@ -14,3 +14,4 @@ def on_startup():
 
 # Include the drivers API router
 app.include_router(drivers.router)
+app.include_router(health.router)

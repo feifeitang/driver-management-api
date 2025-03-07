@@ -1,4 +1,4 @@
-# Driver Management API
+# Driver Management App
 
 This is a FastAPI application following Domain-Driven Design (DDD) principles to manage drivers. The application provides CRUD operations for managing driver records using SQLModel. It allows you to create, read, update, and delete driver records via a RESTful API.
 
@@ -7,6 +7,8 @@ This is a FastAPI application following Domain-Driven Design (DDD) principles to
 - Domain-driven design architecture to separate concerns.
 - Uses MySQL as the database.
 - API documentation available via Swagger UI at `/docs`.
+- Health check API (`/health`) to verify database connection.
+- Supports Docker for easy deployment.
 
 ## Architecture
 The project is organized into layers, each with its own responsibility:
@@ -22,29 +24,32 @@ The project is organized into layers, each with its own responsibility:
 - SQLModel (SQLAlchemy)
 - MySQL (used for local development)
 
-## Installation
+## Installation & Deployment
+You can choose to run the application **locally** or using **Docker**.
 
-### 1. Clone the repository:
+### 1. Running Locally (Manual Installation)
+
+#### 1. Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/driver-management-api.git
-cd driver-management-api
+git clone https://github.com/yourusername/driver-management-app.git
+cd driver-management-app
 ```
 
-### 2. Set up a virtual environment (optional but recommended):
+#### 2. Set up a virtual environment (optional but recommended):
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # On Windows, use .venv\Scripts\activate
 ```
 
-### 3. Install the dependencies:
+#### 3. Install the dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Set up your MySQL database:
+#### 4. Set up your MySQL database:
 
 Make sure you have a MySQL server running. You'll need to set the environment variable for the database URL:
 - Create a `.env` file in the root directory.
@@ -55,7 +60,7 @@ DATABASE_URL=mysql+mysqlconnector://<username>:<password>@localhost/<database_na
 ```
 Replace `<username>`, `<password>`, and `<database_name>` with your actual MySQL credentials.
 
-## Running the Application
+#### 5. Run the Application
 
 You can run the FastAPI app using `uvicorn`:
 
@@ -63,14 +68,65 @@ You can run the FastAPI app using `uvicorn`:
 uvicorn app.main:app --reload
 ```
 
-This will start the development server on `http://127.0.0.1:8000`.
+The server will start on:
+- **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **Health Check API**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
 
-### API Documentation
+### 2. Deployment with Docker
+If you want to deploy the application in a containerized environment, use **Docker**.
 
-Once the server is running, you can view the Swagger UI at:
+#### 1. Clone the repository
 
+```bash
+git clone https://github.com/yourusername/driver-management-app.git
+cd driver-management-app
 ```
-http://127.0.0.1:8000/docs
+
+#### 2. Run with Docker Compose
+
+```bash
+docker-compose up --build
 ```
 
-You can also interact with the API through `http://127.0.0.1:8000/redoc`.
+This will:
+- Build the Docker image
+- Start the FastAPI application
+- Start a MySQL database container
+
+#### 3. Access the Application
+
+- **Swagger UI**: [http://0.0.0.0:8000/docs](http://0.0.0.0:8000/docs)  
+- **Health Check API**: [http://0.0.0.0:8000/health](http://0.0.0.0:8000/health)  
+
+#### 4. Stop the Containers
+
+```bash
+docker-compose down
+```
+This will stop and remove all running containers.
+
+## Health Check API
+To verify if the database is connected, you can use the `/health` endpoint.
+
+### Checking API Health
+
+```bash
+curl -X GET http://0.0.0.0:8000/health
+```
+
+#### Database is connected (Healthy)
+
+```json
+{
+    "status": "ok",
+    "message": "Database connection is healthy"
+}
+```
+
+#### Database is down (Unhealthy)
+
+```json
+{
+    "detail": "Database connection failed: (error details)"
+}
+```

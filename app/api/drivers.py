@@ -15,6 +15,14 @@ def get_driver_service(session: Session = Depends(get_session)):
     Dependency injection to create a DriverService with a session.
     """
     repository = DriverRepository(session)
+
+    # Check the database health
+    is_healthy, message = repository.health_check()
+    if not is_healthy:
+        raise HTTPException(
+            status_code=500, detail=f"Database health check failed: {message}"
+        )
+
     return DriverService(repository)
 
 
