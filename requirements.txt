@@ -4,6 +4,8 @@ black==25.1.0
 certifi==2025.1.31
 click==8.1.8
 dnspython==2.7.0
+ecs-logging==2.2.0
+elastic-apm==6.23.0
 email_validator==2.2.0
 fastapi==0.115.11
 fastapi-cli==0.0.7
@@ -39,7 +41,9 @@ sqlmodel==0.0.23
 starlette==0.46.0
 typer==0.15.2
 typing_extensions==4.12.2
+urllib3==2.3.0
 uvicorn==0.34.0
 uvloop==0.21.0
 watchfiles==1.0.4
 websockets==15.0.1
+wrapt==1.17.2

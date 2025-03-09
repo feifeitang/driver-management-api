@@ -3,15 +3,18 @@
 This is a FastAPI application following Domain-Driven Design (DDD) principles to manage drivers. The application provides CRUD operations for managing driver records using SQLModel. It allows you to create, read, update, and delete driver records via a RESTful API.
 
 ## Features
+
 - Create, Read, Update, and Delete drivers.
 - Domain-driven design architecture to separate concerns.
 - Uses MySQL as the database.
 - API documentation available via Swagger UI at `/docs`.
 - Health check API (`/health`) to verify database connection.
 - Supports Docker for easy deployment.
+- Integrated APM Server, Elasticsearch, and Kibana for logging & monitoring.
 - Unit tests to ensure application functionality.
 
 ## Architecture
+
 The project is organized into layers, each with its own responsibility:
 
 - **Domain Layer**: Contains the core business logic, including validation rules (e.g., age validation).
@@ -20,13 +23,16 @@ The project is organized into layers, each with its own responsibility:
 - **API Layer**: Exposes a RESTful interface for interacting with the application.
 
 ## Requirements
+
 - Python 3.7+
 - FastAPI
 - SQLModel (SQLAlchemy)
 - MySQL (used for local development)
 - pytest (for running unit tests)
+- Docker & Docker Compose (for containerized deployment)
 
 ## Installation & Deployment
+
 You can choose to run the application **locally** or using **Docker**.
 
 ### 1. Running Locally (Manual Installation)
@@ -54,12 +60,14 @@ pip install -r requirements.txt
 #### 4. Set up your MySQL database:
 
 Make sure you have a MySQL server running. You'll need to set the environment variable for the database URL:
+
 - Create a `.env` file in the root directory.
 - Add the following:
 
 ```
 DATABASE_URL=mysql+mysqlconnector://<username>:<password>@localhost/<database_name>
 ```
+
 Replace `<username>`, `<password>`, and `<database_name>` with your actual MySQL credentials.
 
 #### 5. Run the Application
@@ -71,6 +79,7 @@ uvicorn app.main:app --reload
 ```
 
 The server will start on:
+
 - **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 - **Health Check API**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
 
@@ -85,6 +94,7 @@ pytest
 This will run all the tests in the project and display the results in the terminal.
 
 ### 2. Deployment with Docker
+
 If you want to deploy the application in a containerized environment, use **Docker**.
 
 #### 1. Clone the repository
@@ -101,23 +111,48 @@ docker-compose up --build
 ```
 
 This will:
+
 - Build the Docker image
 - Start the FastAPI application
 - Start a MySQL database container
+- Start APM Server, Elasticsearch, and Kibana for logging and monitoring
 
 #### 3. Access the Application
 
-- **Swagger UI**: [http://0.0.0.0:8000/docs](http://0.0.0.0:8000/docs)  
-- **Health Check API**: [http://0.0.0.0:8000/health](http://0.0.0.0:8000/health)  
+- **Swagger UI**: [http://0.0.0.0:8000/docs](http://0.0.0.0:8000/docs)
+- **Health Check API**: [http://0.0.0.0:8000/health](http://0.0.0.0:8000/health)
+- **Kibana UI**: [http://0.0.0.0:5601](http://0.0.0.0:5601)
 
 #### 4. Stop the Containers
 
 ```bash
 docker-compose down
 ```
+
 This will stop and remove all running containers.
 
+## Logging & Monitoring
+
+The application integrates Elastic APM, Elasticsearch, and Kibana for performance monitoring and log analysis.
+
+### APM Server
+
+- Collects application performance data (e.g., request durations, errors, transactions).
+- Sends collected data to Elasticsearch.
+- Enables real-time application monitoring.
+
+### Elasticsearch
+
+- Stores logs and performance metrics.
+- Enables powerful search and analytics capabilities.
+
+### Kibana
+
+- Provides a web-based UI to visualize logs, performance metrics, and errors.
+- Useful for debugging and analyzing application health.
+
 ## Health Check API
+
 To verify if the database is connected, you can use the `/health` endpoint.
 
 ### Checking API Health
@@ -130,8 +165,8 @@ curl -X GET http://0.0.0.0:8000/health
 
 ```json
 {
-    "status": "ok",
-    "message": "Database connection is healthy"
+  "status": "ok",
+  "message": "Database connection is healthy"
 }
 ```
 
@@ -139,6 +174,6 @@ curl -X GET http://0.0.0.0:8000/health
 
 ```json
 {
-    "detail": "Database connection failed: (error details)"
+  "detail": "Database connection failed: (error details)"
 }
 ```

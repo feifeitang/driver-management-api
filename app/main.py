@@ -1,9 +1,13 @@
 from fastapi import FastAPI
 from app.infrastructure import create_db_and_tables
 from app.api import drivers, health
+from app.infrastructure.apm import init_apm
 
 
 app = FastAPI()
+
+# Initialize APM using environment variables
+init_apm(app)
 
 
 # Create database tables on startup
