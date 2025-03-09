@@ -9,6 +9,7 @@ This is a FastAPI application following Domain-Driven Design (DDD) principles to
 - API documentation available via Swagger UI at `/docs`.
 - Health check API (`/health`) to verify database connection.
 - Supports Docker for easy deployment.
+- Unit tests to ensure application functionality.
 
 ## Architecture
 The project is organized into layers, each with its own responsibility:
@@ -23,6 +24,7 @@ The project is organized into layers, each with its own responsibility:
 - FastAPI
 - SQLModel (SQLAlchemy)
 - MySQL (used for local development)
+- pytest (for running unit tests)
 
 ## Installation & Deployment
 You can choose to run the application **locally** or using **Docker**.
@@ -71,6 +73,16 @@ uvicorn app.main:app --reload
 The server will start on:
 - **Swagger UI**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 - **Health Check API**: [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
+
+#### 6. Run Unit Tests
+
+To run the unit tests for the application, use `pytest`:
+
+```bash
+pytest
+```
+
+This will run all the tests in the project and display the results in the terminal.
 
 ### 2. Deployment with Docker
 If you want to deploy the application in a containerized environment, use **Docker**.
