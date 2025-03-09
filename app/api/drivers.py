@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from typing import Annotated, List
+from typing import List
 from app.infrastructure import get_session
 from app.infrastructure.models import Driver, DriverCreate, DriverUpdate, DriverPublic
 from sqlmodel import Session, select
@@ -7,7 +7,7 @@ from app.infrastructure.driver_repository import DriverRepository
 from app.domain.driver_service import DriverService
 
 
-router = APIRouter(prefix="/drivers", tags=["drivers"])
+router = APIRouter(tags=["drivers"])
 
 
 def get_driver_service(session: Session = Depends(get_session)):
@@ -26,7 +26,7 @@ def get_driver_service(session: Session = Depends(get_session)):
     return DriverService(repository)
 
 
-@router.post("/", response_model=DriverPublic)
+@router.post("/drivers", response_model=DriverPublic)
 def create_driver(
     driver: DriverCreate, service: DriverService = Depends(get_driver_service)
 ):
@@ -36,7 +36,7 @@ def create_driver(
     return service.create_driver(driver.name, driver.age, driver.secret_name)
 
 
-@router.get("/", response_model=List[DriverPublic])
+@router.get("/drivers", response_model=List[DriverPublic])
 def get_drivers(service: DriverService = Depends(get_driver_service)):
     """
     API endpoint to retrieve all drivers.
@@ -44,7 +44,7 @@ def get_drivers(service: DriverService = Depends(get_driver_service)):
     return service.get_all_drivers()
 
 
-@router.get("/{driver_id}", response_model=Driver)
+@router.get("/driver/{driver_id}", response_model=Driver)
 def get_driver(driver_id: int, service: DriverService = Depends(get_driver_service)):
     """
     Retrieve a driver by ID.
@@ -55,7 +55,7 @@ def get_driver(driver_id: int, service: DriverService = Depends(get_driver_servi
     return driver
 
 
-@router.put("/{driver_id}", response_model=DriverUpdate)
+@router.put("/driver/{driver_id}", response_model=DriverUpdate)
 def update_driver(
     driver_id: int,
     driver: DriverUpdate,
@@ -72,7 +72,7 @@ def update_driver(
     return updated_driver
 
 
-@router.delete("/{driver_id}", response_model=dict)
+@router.delete("/driver/{driver_id}", response_model=dict)
 def delete_driver(driver_id: int, service: DriverService = Depends(get_driver_service)):
     """
     Delete a driver by ID.
